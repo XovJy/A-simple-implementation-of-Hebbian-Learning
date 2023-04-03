@@ -18,13 +18,6 @@ class HebbianLayer(nn.Module):
 
     def forward(self, x):
         output = F.linear(x, self.weight)
-        # self.weight.data -= 0.0001 * torch.mm(output.t(), x)
-        # 计算梯度
-        # grad = torch.mm(output.t(), x)
-        # # 对梯度进行裁剪
-        # grad = torch.clamp(grad, min=-1, max=1)
-        # # 更新权重
-        # self.weight.data -= 0.001 * grad
 
         hebb_term = torch.mm(output.t(), x)
         y_2 = torch.mul(output, output)
@@ -32,12 +25,8 @@ class HebbianLayer(nn.Module):
         regu_term = torch.mul(self.weight.data, y_2.t())
         d_ws = 0.0001 * (hebb_term - regu_term)
         self.weight.data -= d_ws
-        # print(y_2.size())
-        # print(self.weight.size())
         return output
-        # self.weight.data += 0.1 * torch.bmm(output.unsqueeze(2), x.unsqueeze(1)).mean(dim=0)
 
-        # print(m)
 
 
 class BackpropLayer(nn.Module):
